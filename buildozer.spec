@@ -19,8 +19,8 @@ source.include_exts = py,png,jpg,mp3,json,wav,ttf
 version = 1.0.0
 
 # (list) Application requirements
-# Using 'pygame' as the requirement (p4a will use its stable recipe)
-requirements = python3,pygame
+# Forcing 3.11 to avoid Python 3.12 header conflicts (longintrepr.h)
+requirements = python3==3.11.0,pygame-ce
 
 # (str) Presplash of the application
 presplash.filename = assets/images/logo.png
