@@ -19,8 +19,7 @@ source.include_exts = py,png,jpg,mp3,json,wav,ttf
 version = 1.0.0
 
 # (list) Application requirements
-# Forcing 3.11 for stability
-requirements = python3==3.11.0,pygame
+requirements = python3,pygame-ce
 
 # (str) Presplash of the application
 presplash.filename = assets/images/logo.png
