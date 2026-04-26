@@ -16,9 +16,8 @@ jobs:
 
       - name: Build with Buildozer (Docker)
         run: |
-          # We use the official Kivy Buildozer Docker image to ensure a perfect environment.
-          # We map the current workspace to /home/buildozer/hostdir inside the container.
-          docker run --rm \
+          # Passing 'yes' ensures any other prompts (like SDK licenses) are auto-accepted
+          yes | docker run --rm \
             --volume ${{ github.workspace }}:/home/buildozer/hostdir \
             kivy/buildozer android debug
 
