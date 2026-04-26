@@ -1,20 +1,35 @@
+<div align="center">
+
 # 🏎️ Endless Racer - Android Game
 
-A stylish, procedural 2D endless car racing game built with **Python** and **Pygame-CE**. Optimized for Android devices with touch controls, dynamic environments, and persistent high scores.
+*A feature-rich, high-performance endless 2D car racing game built with Python and Pygame-CE, optimized for Android devices.*
+
+[![Python](https://img.shields.io/badge/Python-3.11+-blue?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
+[![Pygame-CE](https://img.shields.io/badge/Pygame--CE-2.5.2-green?style=for-the-badge&logo=pygame&logoColor=white)](https://pyga.me/)
+[![Android](https://img.shields.io/badge/Android-Ready-orange?style=for-the-badge&logo=android&logoColor=white)](https://www.android.com/)
+
+---
+
+</div>
+
+## 📖 Overview
+
+**Endless Racer** is an elegant and efficient mobile game that brings the classic endless runner experience to your Android device. Developed using **Pygame Community Edition**, it features procedurally generated environments that evolve as you play, dynamic music synthesis, and a professional UI system.
+
+Whether you're dodging traffic in the lush Jungles or racing through the vast Desert, this game is designed to provide a smooth and engaging experience on any screen size.
 
 ## ✨ Features
 
-- **🌆 Procedural Environments:** Experience changing terrains from Mountains to Jungle, Green Land, and Desert as you score higher.
-- **🚗 Smooth Controls:** Optimized on-screen touch controls for mobile play.
-- **🔊 Dynamic Audio:** 
-  - One-time "Welcome back racer" voice greeting.
-  - Adaptive racing music (softer in menus, high energy in game).
-  - Saved volume and SFX settings.
-- **🏆 Score System:** Persistent "Best Score" and "Previous Score" tracking.
-- **🎨 Modern UI:** Smooth gradients, animated transitions, and a custom Credits screen.
-- **📱 Android Ready:** Configured for Buildozer with portrait orientation and specific architectures.
+*   ⚡ **Adaptive Performance:** Built on Pygame-CE for high-speed rendering and low-latency touch response.
+*   🌆 **Procedural Environments:** Transitions through Mountains, Green Lands, Jungles, and Deserts as your score increases.
+*   🔊 **Dynamic Audio System:** Features a custom synthesizer for racing music and professional voice-over greetings.
+*   🏆 **Persistent Scoring:** Tracks your personal best and previous match scores locally using JSON storage.
+*   ⚙️ **Full Customization:** Dedicated settings menu for volume control and SFX toggles with immediate visual feedback.
+*   🎨 **Premium UI:** Smooth transitions, starfield backgrounds, and custom-drawn procedural assets.
 
 ## 📸 Screenshots
+
+<div align="center">
 
 | Welcome Screen | Main Menu | Gameplay |
 |:---:|:---:|:---:|
@@ -24,20 +39,15 @@ A stylish, procedural 2D endless car racing game built with **Python** and **Pyg
 |:---:|:---:|
 | ![Settings](docs/screenshots/settings.png) | ![Credits](docs/screenshots/credits.png) |
 
-## 🛠️ Tech Stack
-
-- **Language:** Python 3.11+
-- **Engine:** Pygame-CE (Community Edition)
-- **Packaging:** Buildozer (for Android APK)
-- **Persistence:** JSON-based local storage
+</div>
 
 ## 🚀 Getting Started
 
-### Prerequisites
-- Python 3.x
-- pip
+### 📋 Prerequisites
+- Python 3.11 or higher
+- Pygame-CE (`pip install pygame-ce`)
 
-### Installation
+### ⚙️ Installation
 1. Clone the repository:
    ```bash
    git clone https://github.com/Manav1918/Endless-Racer.git
@@ -47,22 +57,24 @@ A stylish, procedural 2D endless car racing game built with **Python** and **Pyg
    ```bash
    pip install -r requirements.txt
    ```
-3. Run the game:
+3. Launch the game:
    ```bash
    python main.py
    ```
 
-### Building for Android
-Use Buildozer in a Linux environment (or WSL):
+### 📱 Android Build
+To build the APK for Android, use **Buildozer**:
 ```bash
 buildozer android debug
 ```
 
 ## 📜 Credits
 
-- **Developer:** Pawan Kumar
-- **Organization:** CID – An Education Hub
-- **Tagline:** Keep Coding! Keep Learning!
+*   **Developer:** Pawan Kumar
+*   **Organization:** CID – An Education Hub
+*   **Tagline:** *Keep Coding! Keep Learning!*
 
 ---
-*Developed with ❤️ by Pawan Kumar*
+<div align="center">
+Developed with ❤️ by Pawan Kumar
+</div>
