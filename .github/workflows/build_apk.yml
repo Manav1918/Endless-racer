@@ -14,20 +14,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install System Dependencies
+      - name: Build with Buildozer (Docker)
         run: |
-          sudo apt update
-          sudo apt install -y git zip unzip openjdk-17-jdk python3-pip autoconf libtool pkg-config zlib1g-dev libncurses-dev cmake libffi-dev libssl-dev libsqlite3-dev
-
-      - name: Install Buildozer and Cython
-        run: |
-          pip3 install --user --upgrade "Cython<3.0" buildozer
-          echo "PATH=$PATH:$HOME/.local/bin" >> $GITHUB_ENV
-
-      - name: Build with Buildozer
-        run: |
-          # The 'yes' command handles all the Android SDK/NDK license prompts
-          yes | buildozer android debug
+          # We use the official Kivy Buildozer Docker image to ensure a perfect environment.
+          # We map the current workspace to /home/buildozer/hostdir inside the container.
+          docker run --rm \
+            --volume ${{ github.workspace }}:/home/buildozer/hostdir \
+            kivy/buildozer android debug
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
