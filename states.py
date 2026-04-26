@@ -192,6 +192,7 @@ class MainMenu(State):
             Button(WIDTH//2, 424, 240, 52, "SCORES",    lambda: self.mgr.change_state("Scores")),
             Button(WIDTH//2, 486, 240, 52, "SETTINGS",  lambda: self.mgr.change_state("Settings")),
             Button(WIDTH//2, 548, 240, 52, "CREDITS",   lambda: self.mgr.change_state("Credits")),
+            Button(WIDTH//2, 610, 240, 52, "QUIT",      lambda: self.mgr.quit_game()),
         ]
         # Voice only on very first launch
         if first_launch:
@@ -473,6 +474,7 @@ class PauseMenu(State):
         self.buttons = [
             Button(WIDTH//2, 320, 240, 52, "▶  RESUME",      lambda: self.mgr.change_state("Game", resume=True)),
             Button(WIDTH//2, 390, 240, 52, "🏠  MAIN MENU",  lambda: self.mgr.change_state("MainMenu")),
+            Button(WIDTH//2, 460, 240, 52, "🚪  QUIT GAME",  lambda: self.mgr.quit_game()),
         ]
         audio_manager.pause_music()
 
@@ -597,7 +599,21 @@ class StateManager:
         self.current_name  = name
         self.current_state = self.states[name]
 
+    def quit_game(self):
+        pygame.quit()
+        import sys
+        sys.exit()
+
     def handle_events(self, events):
+        for e in events:
+            # Handle Android hardware back button
+            if e.type == pygame.KEYDOWN and e.key == pygame.K_AC_BACK:
+                if self.current_name == "MainMenu":
+                    self.quit_game()
+                elif self.current_name == "Game":
+                    self.change_state("Pause")
+                else:
+                    self.change_state("MainMenu")
         self.current_state.handle_events(events)
 
     def update(self):
