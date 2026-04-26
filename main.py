@@ -5,7 +5,9 @@ from game_logic import WIDTH, HEIGHT
 
 def main():
     pygame.init()
-    pygame.mixer.init()
+    # Safely initialize the audio manager after pygame.init()
+    from audio_manager import audio_manager
+    audio_manager.init_mixer()
 
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
     pygame.display.set_caption("Endless Racer")

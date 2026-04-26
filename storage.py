@@ -1,7 +1,16 @@
 import json
 import os
 
-SAVE_FILE = os.path.join(os.path.dirname(__file__), "save.json")
+def get_save_path():
+    """Return a writable path for the save file, especially for Android."""
+    # Check if we are running on Android
+    if 'ANDROID_ARGUMENT' in os.environ or 'ANDROID_PRIVATE' in os.environ:
+        # Use the internal app storage directory
+        return os.path.join(os.environ.get('PYTHON_SERVICE_ARGUMENT', '.'), "save.json")
+    # Default to local folder for PC
+    return os.path.join(os.path.dirname(__file__), "save.json")
+
+SAVE_FILE = get_save_path()
 
 DEFAULTS = {
     "best_score": 0,
