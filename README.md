@@ -40,7 +40,7 @@ A stylish, procedural 2D endless car racing game built with **Python** and **Pyg
 ### Installation
 1. Clone the repository:
    ```bash
-   git clone https://github.com/YOUR_USERNAME/Endless-Racer.git
+   git clone https://github.com/Manav1918/Endless-Racer.git
    cd Endless-Racer
    ```
 2. Install dependencies:
