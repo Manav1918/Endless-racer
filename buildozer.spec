@@ -14,23 +14,19 @@ source.dir = .
 
 # (list) Source files to include (let's be explicit)
 source.include_exts = py,png,jpg,mp3,json,wav,ttf
-source.include_patterns = assets/*,assets/images/*,assets/audio/*
 
 # (str) Application versioning
 version = 1.0.0
 
 # (list) Application requirements
-# pygame-ce is the community edition we are using
-requirements = python3,pygame-ce
-
-# (str) Custom source folders for requirements
-# p4a.local_recipes = ./recipes
+# Using 'pygame' as the requirement (p4a will use its stable recipe)
+requirements = python3,pygame
 
 # (str) Presplash of the application
-presplash.filename = %(source.dir)s/assets/images/logo.png
+presplash.filename = assets/images/logo.png
 
 # (str) Icon of the application
-icon.filename = %(source.dir)s/assets/images/logo.png
+icon.filename = assets/images/logo.png
 
 # (str) Supported orientation (one of landscape, sensorLandscape, portrait or all)
 orientation = portrait
@@ -41,22 +37,13 @@ fullscreen = 1
 # (list) Permissions
 android.permissions = INTERNET
 
-# (int) Target Android API, should be as high as possible.
-android.api = 33
+# (int) Target Android API
+android.api = 31
 
-# (int) Minimum API your APK will support.
+# (int) Minimum API
 android.minapi = 21
 
-# (str) Android NDK version to use
-# android.ndk = 25b
-
-# (str) Android SDK directory to use (if empty, it will be installed automatically)
-# android.sdk_path = 
-
-# (str) Android NDK directory to use (if empty, it will be installed automatically)
-# android.ndk_path = 
-
-# (list) The Android architectures to build for, choices: armeabi-v7a, arm64-v8a, x86, x86_64
+# (list) The Android architectures to build for
 android.archs = arm64-v8a, armeabi-v7a
 
 # (bool) enable Android auto backup
