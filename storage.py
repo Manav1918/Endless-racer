@@ -2,13 +2,17 @@ import json
 import os
 
 def get_save_path():
-    """Return a writable path for the save file, especially for Android."""
-    # Check if we are running on Android
-    if 'ANDROID_ARGUMENT' in os.environ or 'ANDROID_PRIVATE' in os.environ:
-        # Use the internal app storage directory
-        return os.path.join(os.environ.get('PYTHON_SERVICE_ARGUMENT', '.'), "save.json")
-    # Default to local folder for PC
-    return os.path.join(os.path.dirname(__file__), "save.json")
+    """Return a writable path for the save file on Android."""
+    try:
+        # On Android, the private internal storage is the safest place
+        if 'ANDROID_PRIVATE' in os.environ:
+            return os.path.join(os.environ['ANDROID_PRIVATE'], "save.json")
+        if 'PYTHON_SERVICE_ARGUMENT' in os.environ:
+            return os.path.join(os.environ['PYTHON_SERVICE_ARGUMENT'], "save.json")
+    except Exception:
+        pass
+    # Fallback to current directory (usually works in buildozer apps)
+    return "save.json"
 
 SAVE_FILE = get_save_path()
 

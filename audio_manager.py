@@ -4,7 +4,7 @@ from storage import load_data
 
 class AudioManager:
     def __init__(self):
-        self.audio_dir = os.path.join(os.path.dirname(__file__), "assets", "audio")
+        self.audio_dir = os.path.join("assets", "audio")
         self._voice_channel = None
         self._music_loaded  = False
         self._initialized   = False

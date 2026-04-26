@@ -40,7 +40,7 @@ class Button:
         self.text   = text
         self.action = action
         self.hovered = False
-        self.font   = pygame.font.SysFont("Arial", 26, bold=True)
+        self.font   = pygame.font.Font(None, 26)
 
     def draw(self, screen):
         top = BTN_HOVER if self.hovered else BTN_BASE
@@ -111,8 +111,8 @@ class WelcomeScreen(State):
         self.logo_bounce = 0.0
         self.road_y = 0.0
         self.car_x  = -80.0
-        self.font_big  = pygame.font.SysFont("Impact", 72)
-        self.font_sub  = pygame.font.SysFont("Arial", 26, bold=True)
+        self.font_big  = pygame.font.Font(None, 72)
+        self.font_sub  = pygame.font.Font(None, 26)
         self.done = False
 
     def update(self):
@@ -184,8 +184,8 @@ class MainMenu(State):
         self.stars  = [Star() for _ in range(80)]
         self.timer  = 0
         self.road_y = 0.0
-        self.font_title = pygame.font.SysFont("Impact", 64)
-        self.font_score = pygame.font.SysFont("Arial",  24)
+        self.font_title = pygame.font.Font(None, 64)
+        self.font_score = pygame.font.Font(None,  24)
         self.buttons = [
             Button(WIDTH//2, 300, 240, 52, "NEW GAME",  lambda: self.mgr.change_state("Game")),
             Button(WIDTH//2, 362, 240, 52, "CONTINUE",  lambda: self.mgr.change_state("Game", continue_game=True)),
@@ -256,8 +256,8 @@ class ScoresScreen(State):
     def __init__(self, manager):
         super().__init__(manager)
         self.data = load_data()
-        self.font_t = pygame.font.SysFont("Impact", 52)
-        self.font_n = pygame.font.SysFont("Arial", 28)
+        self.font_t = pygame.font.Font(None, 52)
+        self.font_n = pygame.font.Font(None, 28)
         self.back   = Button(WIDTH//2, HEIGHT-100, 200, 50, "◀  BACK",
                              lambda: self.mgr.change_state("MainMenu"))
 
@@ -290,15 +290,15 @@ class ScoresScreen(State):
 # 4. Credits screen
 # ─────────────────────────────────────────────────────────────
 class CreditsScreen(State):
-    LOGO_PATH = os.path.join(os.path.dirname(__file__), "assets", "images", "logo.png")
+    LOGO_PATH = os.path.join("assets", "images", "logo.png")
 
     def __init__(self, manager):
         super().__init__(manager)
         self.timer  = 0
         self.stars  = [Star() for _ in range(60)]
-        self.font_t = pygame.font.SysFont("Impact", 52)
-        self.font_h = pygame.font.SysFont("Arial",  26, bold=True)
-        self.font_n = pygame.font.SysFont("Arial",  22)
+        self.font_t = pygame.font.Font(None, 52)
+        self.font_h = pygame.font.Font(None, 26)
+        self.font_n = pygame.font.Font(None, 22)
         self.back   = Button(WIDTH//2, HEIGHT - 90, 200, 50, "BACK",
                              lambda: self.mgr.change_state("MainMenu"))
         self.logo = None
@@ -335,7 +335,7 @@ class CreditsScreen(State):
         else:
             pygame.draw.circle(screen, (30, 60, 120), (WIDTH//2, logo_cy), 90)
             pygame.draw.circle(screen, ACCENT,         (WIDTH//2, logo_cy), 90, width=3)
-            fb = pygame.font.SysFont("Impact", 60)
+            fb = pygame.font.Font(None, 60)
             ct = fb.render("CID", True, (220, 50, 50))
             screen.blit(ct, ct.get_rect(center=(WIDTH//2, logo_cy)))
 
@@ -372,8 +372,8 @@ class SettingsScreen(State):
         self.music_vol = data.get("music_vol", 50)
         self.sfx_on    = data.get("sfx_on", True)
 
-        self.font_t = pygame.font.SysFont("Impact", 52)
-        self.font_n = pygame.font.SysFont("Arial",  24)
+        self.font_t = pygame.font.Font(None, 52)
+        self.font_n = pygame.font.Font(None, 24)
         self.back   = Button(WIDTH//2, HEIGHT-100, 200, 50, "BACK",
                              lambda: self.mgr.change_state("MainMenu"))
         self.vol_up = Button(WIDTH//2+80, 290, 60, 44, "+",
@@ -470,7 +470,7 @@ class GameState(State):
 class PauseMenu(State):
     def __init__(self, manager):
         super().__init__(manager)
-        self.font_t  = pygame.font.SysFont("Impact", 72)
+        self.font_t  = pygame.font.Font(None, 72)
         self.buttons = [
             Button(WIDTH//2, 320, 240, 52, "▶  RESUME",      lambda: self.mgr.change_state("Game", resume=True)),
             Button(WIDTH//2, 390, 240, 52, "🏠  MAIN MENU",  lambda: self.mgr.change_state("MainMenu")),
@@ -501,8 +501,8 @@ class GameOver(State):
         super().__init__(manager)
         self.final_score = final_score
         self.best        = best
-        self.font_t  = pygame.font.SysFont("Impact", 64)
-        self.font_n  = pygame.font.SysFont("Arial",  28)
+        self.font_t  = pygame.font.Font(None, 64)
+        self.font_n  = pygame.font.Font(None, 28)
         self.stars   = [Star() for _ in range(60)]
         self.timer   = 0
         self.buttons = [
