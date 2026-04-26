@@ -16,9 +16,13 @@ jobs:
 
       - name: Build with Buildozer (Docker)
         run: |
-          # Passing 'yes' ensures any other prompts (like SDK licenses) are auto-accepted
-          yes | docker run --rm \
+          # Passing 'yes' with '--interactive' ensures prompts are accepted.
+          # '--env BUILDOZER_WARN_ON_ROOT=0' is the most reliable way to skip the root check.
+          # '--workdir' ensures Buildozer finds the 'buildozer.spec' in the mounted folder.
+          yes | docker run --interactive --rm \
+            --env BUILDOZER_WARN_ON_ROOT=0 \
             --volume ${{ github.workspace }}:/home/buildozer/hostdir \
+            --workdir /home/buildozer/hostdir \
             kivy/buildozer android debug
 
       - name: Upload APK
