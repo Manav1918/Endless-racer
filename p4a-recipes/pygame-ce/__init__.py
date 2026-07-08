@@ -80,7 +80,6 @@ class PygameCeRecipe(CompiledComponentsPythonRecipe):
                 "install",
                 ".",
                 "--no-build-isolation",
-                "--no-use-pep517",
                 "--compile",
                 "--target",
                 self.ctx.get_python_install_dir(arch.arch),
