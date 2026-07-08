@@ -7,7 +7,7 @@ from pythonforandroid.toolchain import current_directory
 class PygameCeRecipe(CompiledComponentsPythonRecipe):
     """Build pygame-ce from source for the Android target architecture."""
 
-    version = "2.5.7"
+    version = "2.6.1"
     url = "https://github.com/pygame-community/pygame-ce/archive/{version}.tar.gz"
 
     name = "pygame-ce"
