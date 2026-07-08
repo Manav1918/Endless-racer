@@ -67,7 +67,7 @@ class PygameCeRecipe(CompiledComponentsPythonRecipe):
         old_spawn = "distutils.ccompiler.spawn(cmd, dry_run=self.dry_run, **kwargs)"
         new_spawn = (
             "__import__('setuptools._distutils.spawn', "
-            "fromlist=['spawn']).spawn(cmd, dry_run=self.dry_run, **kwargs)"
+            "fromlist=['spawn']).spawn(cmd, dry_run=getattr(self, 'dry_run', False), **kwargs)"
         )
         source = open(setup_py, "r", encoding="utf-8").read()
         if old_spawn in source:
