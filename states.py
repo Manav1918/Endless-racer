@@ -232,7 +232,7 @@ class MainMenu(State):
             screen.blit(glow_surf, glow_surf.get_rect(centerx=WIDTH//2+dx, centery=160+dy))
         screen.blit(title, title.get_rect(centerx=WIDTH//2, centery=160))
 
-        subtitle = self.font_score.render("– Endless Road Ahead –", True, LIGHT)
+        subtitle = self.font_score.render("Endless Road Ahead", True, LIGHT)
         screen.blit(subtitle, subtitle.get_rect(centerx=WIDTH//2, centery=220))
 
         for b in self.buttons:
@@ -243,8 +243,8 @@ class MainMenu(State):
         panel.fill((255,255,255,15))
         screen.blit(panel, (20, HEIGHT - 90))
         pygame.draw.rect(screen, (60,80,140), (20, HEIGHT-90, WIDTH-40, 70), width=1, border_radius=8)
-        bs  = self.font_score.render(f"🏆 Best: {int(self.data['best_score'])}", True, GOLD)
-        ps  = self.font_score.render(f"⏱ Last: {int(self.data['previous_score'])}", True, LIGHT)
+        bs  = self.font_score.render(f"Best: {int(self.data['best_score'])}", True, GOLD)
+        ps  = self.font_score.render(f"Last: {int(self.data['previous_score'])}", True, LIGHT)
         screen.blit(bs, (40, HEIGHT-80))
         screen.blit(ps, (40, HEIGHT-52))
 
@@ -258,7 +258,7 @@ class ScoresScreen(State):
         self.data = load_data()
         self.font_t = pygame.font.Font(None, 52)
         self.font_n = pygame.font.Font(None, 28)
-        self.back   = Button(WIDTH//2, HEIGHT-100, 200, 50, "◀  BACK",
+        self.back   = Button(WIDTH//2, HEIGHT-100, 200, 50, "BACK",
                              lambda: self.mgr.change_state("MainMenu"))
 
     def handle_events(self, events):
@@ -271,8 +271,8 @@ class ScoresScreen(State):
         screen.blit(t, t.get_rect(centerx=WIDTH//2, centery=100))
 
         rows = [
-            ("🏆  Best Score",     int(self.data["best_score"])),
-            ("⏱  Previous Score", int(self.data["previous_score"])),
+            ("Best Score",     int(self.data["best_score"])),
+            ("Previous Score", int(self.data["previous_score"])),
         ]
         for i, (label, val) in enumerate(rows):
             y = 220 + i * 100
@@ -348,7 +348,7 @@ class CreditsScreen(State):
             ("Developed by",            self.font_n, (180, 180, 200)),
             ("Pawan Kumar",             self.font_h, GOLD),
             ("",                        self.font_n, WHITE),
-            ("CID – An Education Hub",  self.font_h, LIGHT),
+            ("CID - An Education Hub",  self.font_h, LIGHT),
             ("Keep Coding! Keep Learning!",   self.font_n, (180, 180, 200)),
         ]
         y_off = panel_y + 14
@@ -472,9 +472,9 @@ class PauseMenu(State):
         super().__init__(manager)
         self.font_t  = pygame.font.Font(None, 72)
         self.buttons = [
-            Button(WIDTH//2, 320, 240, 52, "▶  RESUME",      lambda: self.mgr.change_state("Game", resume=True)),
-            Button(WIDTH//2, 390, 240, 52, "🏠  MAIN MENU",  lambda: self.mgr.change_state("MainMenu")),
-            Button(WIDTH//2, 460, 240, 52, "🚪  QUIT GAME",  lambda: self.mgr.quit_game()),
+            Button(WIDTH//2, 320, 240, 52, "RESUME",      lambda: self.mgr.change_state("Game", resume=True)),
+            Button(WIDTH//2, 390, 240, 52, "MAIN MENU",   lambda: self.mgr.change_state("MainMenu")),
+            Button(WIDTH//2, 460, 240, 52, "QUIT GAME",   lambda: self.mgr.quit_game()),
         ]
         audio_manager.pause_music()
 
@@ -506,8 +506,8 @@ class GameOver(State):
         self.stars   = [Star() for _ in range(60)]
         self.timer   = 0
         self.buttons = [
-            Button(WIDTH//2, 520, 220, 52, "🔄  PLAY AGAIN", lambda: self.mgr.change_state("Game")),
-            Button(WIDTH//2, 590, 220, 52, "🏠  MENU",       lambda: self.mgr.change_state("MainMenu")),
+            Button(WIDTH//2, 520, 220, 52, "PLAY AGAIN", lambda: self.mgr.change_state("Game")),
+            Button(WIDTH//2, 590, 220, 52, "MENU",       lambda: self.mgr.change_state("MainMenu")),
         ]
 
     def update(self):

@@ -41,6 +41,7 @@ coverage.xml
 .buildozer/
 bin/
 *.apk
+release-artifacts/
 
 # Local settings
 save.json
