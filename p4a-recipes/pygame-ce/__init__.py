@@ -1,0 +1,145 @@
+from os import rename
+from os.path import exists, join
+
+from pythonforandroid.logger import info, shprint
+from pythonforandroid.recipe import CompiledComponentsPythonRecipe
+from pythonforandroid.toolchain import current_directory
+
+
+class PygameCeRecipe(CompiledComponentsPythonRecipe):
+    """Build pygame-ce from source for the Android target architecture."""
+
+    version = "2.5.5"
+    url = "https://github.com/pygame-community/pygame-ce/archive/{version}.tar.gz"
+
+    name = "pygame-ce"
+    site_packages_name = "pygame"
+    depends = ["sdl2", "sdl2_image", "sdl2_mixer", "sdl2_ttf", "setuptools", "jpeg", "png"]
+    hostpython_prerequisites = ["setuptools", "Cython>=0.29,<3.1"]
+
+    call_hostpython_via_targetpython = False
+    install_in_hostpython = False
+
+    def prebuild_arch(self, arch):
+        super().prebuild_arch(arch)
+        with current_directory(self.get_build_dir(arch.arch)):
+            self._patch_setup_py_for_android()
+            self._patch_version_reader()
+            self._disable_meson_build_backend()
+            setup_template = open(join("buildconfig", "Setup.Android.SDL2.in")).read()
+            env = self.get_recipe_env(arch)
+            env["ANDROID_ROOT"] = join(self.ctx.ndk.sysroot, "usr")
+
+            png = self.get_recipe("png", self.ctx)
+            png_lib_dir = join(png.get_build_dir(arch.arch), ".libs")
+            png_inc_dir = png.get_build_dir(arch.arch)
+
+            jpeg = self.get_recipe("jpeg", self.ctx)
+            jpeg_inc_dir = jpeg_lib_dir = jpeg.get_build_dir(arch.arch)
+
+            sdl_mixer_includes = ""
+            sdl2_mixer_recipe = self.get_recipe("sdl2_mixer", self.ctx)
+            for include_dir in sdl2_mixer_recipe.get_include_dirs(arch):
+                sdl_mixer_includes += f"-I{include_dir} "
+
+            setup_file = setup_template.format(
+                sdl_includes=(
+                    " -I" + join(self.ctx.bootstrap.build_dir, "jni", "SDL", "include")
+                    + " -L" + join(self.ctx.bootstrap.build_dir, "libs", str(arch))
+                    + " -L" + png_lib_dir
+                    + " -L" + jpeg_lib_dir
+                    + " -L" + arch.ndk_lib_dir_versioned
+                ),
+                sdl_ttf_includes="-I" + join(self.ctx.bootstrap.build_dir, "jni", "SDL2_ttf"),
+                sdl_image_includes="-I" + join(
+                    self.ctx.bootstrap.build_dir, "jni", "SDL2_image", "include"
+                ),
+                sdl_mixer_includes=sdl_mixer_includes,
+                jpeg_includes="-I" + jpeg_inc_dir,
+                png_includes="-I" + png_inc_dir,
+                freetype_includes="",
+            )
+            setup_file = self._remove_x86_simd_sources(setup_file)
+            open("Setup", "w").write(setup_file)
+
+    def get_recipe_env(self, arch):
+        env = super().get_recipe_env(arch)
+        env["USE_SDL2"] = "1"
+        env["PYGAME_CROSS_COMPILE"] = "TRUE"
+        env["PYGAME_ANDROID"] = "TRUE"
+        return env
+
+    def install_python_package(self, arch, name=None, env=None, is_dir=True):
+        if env is None:
+            env = self.get_recipe_env(arch)
+
+        info("Installing {} into site-packages".format(self.name))
+        with current_directory(self.get_build_dir(arch.arch)):
+            shprint(
+                self._host_recipe.pip,
+                "install",
+                ".",
+                "--no-build-isolation",
+                "--compile",
+                "--target",
+                self.ctx.get_python_install_dir(arch.arch),
+                _env=env,
+            )
+
+    def _patch_setup_py_for_android(self):
+        setup_py = "setup.py"
+        old_spawn = "distutils.ccompiler.spawn(cmd, dry_run=self.dry_run, **kwargs)"
+        new_spawn = (
+            "__import__('setuptools._distutils.spawn', "
+            "fromlist=['spawn']).spawn(cmd, **kwargs)"
+        )
+        source = open(setup_py, "r", encoding="utf-8").read()
+        patched_source = source
+        patched_source = patched_source.replace(
+            "avx2_filenames = ['simd_blitters_avx2', 'simd_transform_avx2', 'simd_surface_fill_avx2']",
+            "avx2_filenames = []",
+        )
+        if old_spawn in patched_source:
+            patched_source = patched_source.replace(old_spawn, new_spawn)
+        if patched_source != source:
+            open(setup_py, "w", encoding="utf-8").write(patched_source)
+
+    def _remove_x86_simd_sources(self, setup_file):
+        for source_name in (
+            "src_c/simd_blitters_avx2.c ",
+            "src_c/simd_blitters_sse2.c ",
+            "src_c/simd_transform_avx2.c ",
+            "src_c/simd_transform_sse2.c ",
+            "src_c/simd_surface_fill_avx2.c ",
+            "src_c/simd_surface_fill_sse2.c ",
+            "src_c/scale_mmx.c ",
+        ):
+            setup_file = setup_file.replace(source_name, "")
+        return setup_file
+
+    def _patch_version_reader(self):
+        version_py = join("buildconfig", "get_version.py")
+        version_parts = self.version.split(".")
+        source = (
+            f"version = '{self.version}'\n"
+            f"version_short = '{self.version}'\n"
+            "version_macros = (\n"
+            f"    ('PG_MAJOR_VERSION', '{version_parts[0]}'),\n"
+            f"    ('PG_MINOR_VERSION', '{version_parts[1]}'),\n"
+            f"    ('PG_PATCH_VERSION', '{version_parts[2]}'),\n"
+            "    ('PG_VERSION_TAG', '\"\"'),\n"
+            ")\n\n"
+            "if __name__ == '__main__':\n"
+            "    import sys\n"
+            "    print('\\n'.join(f'-D{key}={value}' for key, value in version_macros) if '--macros' in sys.argv else version)\n"
+        )
+        open(version_py, "w", encoding="utf-8").write(source)
+
+    def _disable_meson_build_backend(self):
+        pyproject = "pyproject.toml"
+        disabled_pyproject = pyproject + ".disabled-for-android"
+        if exists(pyproject) and not exists(disabled_pyproject):
+            rename(pyproject, disabled_pyproject)
+
+
+recipe = PygameCeRecipe()
