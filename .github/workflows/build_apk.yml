@@ -20,12 +20,10 @@ jobs:
           # '--env BUILDOZER_WARN_ON_ROOT=0' is the most reliable way to skip the root check.
           # '--workdir' ensures Buildozer finds the 'buildozer.spec' in the mounted folder.
           yes | docker run --interactive --rm \
-            --entrypoint /bin/bash \
             --env BUILDOZER_WARN_ON_ROOT=0 \
             --volume ${{ github.workspace }}:/home/buildozer/hostdir \
             --workdir /home/buildozer/hostdir \
-            kivy/buildozer \
-            -lc '/home/user/.venv/bin/python3 -m pip install "Cython<3.1" && yes | buildozer android debug'
+            kivy/buildozer android debug
 
       - name: Upload APK
         uses: actions/upload-artifact@v4

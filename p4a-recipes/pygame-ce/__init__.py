@@ -13,6 +13,7 @@ class PygameCeRecipe(CompiledComponentsPythonRecipe):
     name = "pygame-ce"
     site_packages_name = "pygame"
     depends = ["sdl2", "sdl2_image", "sdl2_mixer", "sdl2_ttf", "setuptools", "jpeg", "png"]
+    hostpython_prerequisites = ["Cython>=0.29,<3.1"]
 
     call_hostpython_via_targetpython = False
     install_in_hostpython = False
