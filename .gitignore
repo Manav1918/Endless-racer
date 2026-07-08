@@ -42,6 +42,7 @@ coverage.xml
 bin/
 *.apk
 release-artifacts/
+release-artifacts-*/
 
 # Local settings
 save.json
