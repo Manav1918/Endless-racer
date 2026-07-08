@@ -1,6 +1,7 @@
 from os import rename
 from os.path import exists, join
 
+from pythonforandroid.logger import info, shprint
 from pythonforandroid.recipe import CompiledComponentsPythonRecipe
 from pythonforandroid.toolchain import current_directory
 
@@ -67,6 +68,24 @@ class PygameCeRecipe(CompiledComponentsPythonRecipe):
         env["PYGAME_CROSS_COMPILE"] = "TRUE"
         env["PYGAME_ANDROID"] = "TRUE"
         return env
+
+    def install_python_package(self, arch, name=None, env=None, is_dir=True):
+        if env is None:
+            env = self.get_recipe_env(arch)
+
+        info("Installing {} into site-packages".format(self.name))
+        with current_directory(self.get_build_dir(arch.arch)):
+            shprint(
+                self._host_recipe.pip,
+                "install",
+                ".",
+                "--no-build-isolation",
+                "--no-use-pep517",
+                "--compile",
+                "--target",
+                self.ctx.get_python_install_dir(arch.arch),
+                _env=env,
+            )
 
     def _patch_setup_py_for_android(self):
         setup_py = "setup.py"
