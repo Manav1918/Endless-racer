@@ -16,7 +16,7 @@ source.dir = .
 source.include_exts = py,png,jpg,mp3,json,wav,ttf
 
 # (str) Application versioning
-version = 1.0.3
+version = 1.0.4
 
 # (list) Application requirements
 requirements = python3,pygame-ce
@@ -48,6 +48,9 @@ android.archs = arm64-v8a, armeabi-v7a
 
 # (bool) enable Android auto backup
 android.allow_backup = True
+
+# Build pygame-ce from source for Android instead of bundling a desktop wheel.
+p4a.local_recipes = p4a-recipes
 
 # (list) List of service to declare
 #services = NAME:ENTRYPOINT_TO_PY,NAME2:ENTRYPOINT_TO_PY
