@@ -1,4 +1,5 @@
-from os.path import join
+from os import rename
+from os.path import exists, join
 
 from pythonforandroid.recipe import CompiledComponentsPythonRecipe
 from pythonforandroid.toolchain import current_directory
@@ -22,6 +23,7 @@ class PygameCeRecipe(CompiledComponentsPythonRecipe):
         super().prebuild_arch(arch)
         with current_directory(self.get_build_dir(arch.arch)):
             self._patch_setup_py_for_android()
+            self._disable_meson_build_backend()
             setup_template = open(join("buildconfig", "Setup.Android.SDL2.in")).read()
             env = self.get_recipe_env(arch)
             env["ANDROID_ROOT"] = join(self.ctx.ndk.sysroot, "usr")
@@ -95,6 +97,12 @@ class PygameCeRecipe(CompiledComponentsPythonRecipe):
         ):
             setup_file = setup_file.replace(source_name, "")
         return setup_file
+
+    def _disable_meson_build_backend(self):
+        pyproject = "pyproject.toml"
+        disabled_pyproject = pyproject + ".disabled-for-android"
+        if exists(pyproject) and not exists(disabled_pyproject):
+            rename(pyproject, disabled_pyproject)
 
 
 recipe = PygameCeRecipe()
