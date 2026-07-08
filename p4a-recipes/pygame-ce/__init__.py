@@ -23,6 +23,7 @@ class PygameCeRecipe(CompiledComponentsPythonRecipe):
         super().prebuild_arch(arch)
         with current_directory(self.get_build_dir(arch.arch)):
             self._patch_setup_py_for_android()
+            self._patch_version_reader()
             self._disable_meson_build_backend()
             setup_template = open(join("buildconfig", "Setup.Android.SDL2.in")).read()
             env = self.get_recipe_env(arch)
@@ -97,6 +98,24 @@ class PygameCeRecipe(CompiledComponentsPythonRecipe):
         ):
             setup_file = setup_file.replace(source_name, "")
         return setup_file
+
+    def _patch_version_reader(self):
+        version_py = join("buildconfig", "get_version.py")
+        version_parts = self.version.split(".")
+        source = (
+            f"version = '{self.version}'\n"
+            f"version_short = '{self.version}'\n"
+            "version_macros = (\n"
+            f"    ('PG_MAJOR_VERSION', '{version_parts[0]}'),\n"
+            f"    ('PG_MINOR_VERSION', '{version_parts[1]}'),\n"
+            f"    ('PG_PATCH_VERSION', '{version_parts[2]}'),\n"
+            "    ('PG_VERSION_TAG', '\"\"'),\n"
+            ")\n\n"
+            "if __name__ == '__main__':\n"
+            "    import sys\n"
+            "    print('\\n'.join(f'-D{key}={value}' for key, value in version_macros) if '--macros' in sys.argv else version)\n"
+        )
+        open(version_py, "w", encoding="utf-8").write(source)
 
     def _disable_meson_build_backend(self):
         pyproject = "pyproject.toml"
