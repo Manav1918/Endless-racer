@@ -1,25 +1,21 @@
 import json
 import os
 
-def get_save_path():
-    """Return a writable path for the save file on Android."""
+def get_save_path(filename="save.json"):
+    """Return a writable app-private path on Android, or a local path on desktop."""
+    base_dir = os.environ.get("ANDROID_PRIVATE") or os.getcwd()
     try:
-        # On Android, the private internal storage is the safest place
-        if 'ANDROID_PRIVATE' in os.environ:
-            return os.path.join(os.environ['ANDROID_PRIVATE'], "save.json")
-        if 'PYTHON_SERVICE_ARGUMENT' in os.environ:
-            return os.path.join(os.environ['PYTHON_SERVICE_ARGUMENT'], "save.json")
+        os.makedirs(base_dir, exist_ok=True)
     except Exception:
-        pass
-    # Fallback to current directory (usually works in buildozer apps)
-    return "save.json"
+        base_dir = os.getcwd()
+    return os.path.join(base_dir, filename)
 
 SAVE_FILE = get_save_path()
 
 DEFAULTS = {
     "best_score": 0,
     "previous_score": 0,
-    "music_vol": 50,   # 0–100
+    "music_vol": 50,
     "sfx_on": True,
 }
 
@@ -27,7 +23,8 @@ def load_data():
     if not os.path.exists(SAVE_FILE):
         return dict(DEFAULTS)
     try:
-        data = json.load(open(SAVE_FILE, "r"))
+        with open(SAVE_FILE, "r", encoding="utf-8") as f:
+            data = json.load(f)
         # Fill any missing keys with defaults (handles old save files)
         for k, v in DEFAULTS.items():
             data.setdefault(k, v)

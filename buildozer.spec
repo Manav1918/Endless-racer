@@ -16,7 +16,7 @@ source.dir = .
 source.include_exts = py,png,jpg,mp3,json,wav,ttf
 
 # (str) Application versioning
-version = 1.0.0
+version = 1.0.1
 
 # (list) Application requirements
 requirements = python3,pygame-ce
@@ -34,7 +34,8 @@ orientation = portrait
 fullscreen = 1
 
 # (list) Permissions
-android.permissions = INTERNET, WRITE_EXTERNAL_STORAGE, READ_EXTERNAL_STORAGE
+# No runtime permissions are required; saves use the app-private Android folder.
+# android.permissions =
 
 # (int) Target Android API
 android.api = 33
