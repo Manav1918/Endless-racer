@@ -21,7 +21,7 @@ class PygameCeRecipe(CompiledComponentsPythonRecipe):
     def prebuild_arch(self, arch):
         super().prebuild_arch(arch)
         with current_directory(self.get_build_dir(arch.arch)):
-            self._patch_setup_py_for_python_314()
+            self._patch_setup_py_for_android()
             setup_template = open(join("buildconfig", "Setup.Android.SDL2.in")).read()
             env = self.get_recipe_env(arch)
             env["ANDROID_ROOT"] = join(self.ctx.ndk.sysroot, "usr")
@@ -55,6 +55,7 @@ class PygameCeRecipe(CompiledComponentsPythonRecipe):
                 png_includes="-I" + png_inc_dir,
                 freetype_includes="",
             )
+            setup_file = self._remove_x86_simd_sources(setup_file)
             open("Setup", "w").write(setup_file)
 
     def get_recipe_env(self, arch):
@@ -64,7 +65,7 @@ class PygameCeRecipe(CompiledComponentsPythonRecipe):
         env["PYGAME_ANDROID"] = "TRUE"
         return env
 
-    def _patch_setup_py_for_python_314(self):
+    def _patch_setup_py_for_android(self):
         setup_py = "setup.py"
         old_spawn = "distutils.ccompiler.spawn(cmd, dry_run=self.dry_run, **kwargs)"
         new_spawn = (
@@ -72,9 +73,28 @@ class PygameCeRecipe(CompiledComponentsPythonRecipe):
             "fromlist=['spawn']).spawn(cmd, **kwargs)"
         )
         source = open(setup_py, "r", encoding="utf-8").read()
-        if old_spawn in source:
-            source = source.replace(old_spawn, new_spawn)
-            open(setup_py, "w", encoding="utf-8").write(source)
+        patched_source = source
+        patched_source = patched_source.replace(
+            "avx2_filenames = ['simd_blitters_avx2', 'simd_transform_avx2', 'simd_surface_fill_avx2']",
+            "avx2_filenames = []",
+        )
+        if old_spawn in patched_source:
+            patched_source = patched_source.replace(old_spawn, new_spawn)
+        if patched_source != source:
+            open(setup_py, "w", encoding="utf-8").write(patched_source)
+
+    def _remove_x86_simd_sources(self, setup_file):
+        for source_name in (
+            "src_c/simd_blitters_avx2.c ",
+            "src_c/simd_blitters_sse2.c ",
+            "src_c/simd_transform_avx2.c ",
+            "src_c/simd_transform_sse2.c ",
+            "src_c/simd_surface_fill_avx2.c ",
+            "src_c/simd_surface_fill_sse2.c ",
+            "src_c/scale_mmx.c ",
+        ):
+            setup_file = setup_file.replace(source_name, "")
+        return setup_file
 
 
 recipe = PygameCeRecipe()
