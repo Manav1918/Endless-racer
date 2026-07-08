@@ -553,7 +553,6 @@ class StateManager:
             "Credits": CreditsScreen(self),
         }
         self._build_settings()  # always fresh so saved values load
-        self._build_main_menu(first_launch=True)
         self.current_name  = "Welcome"
         self.current_state = self.states["Welcome"]
 
@@ -594,7 +593,8 @@ class StateManager:
             self.states["Credits"] = CreditsScreen(self)
 
         elif name == "MainMenu":
-            self._build_main_menu(first_launch=False)
+            self._build_main_menu(first_launch=self._first_launch)
+            self._first_launch = False
 
         self.current_name  = name
         self.current_state = self.states[name]

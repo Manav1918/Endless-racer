@@ -19,16 +19,21 @@ def write_crash_log(exc):
 def main():
     # Crash logging for Android debugging
     try:
+        print("[Startup] pygame.init")
         pygame.init()
         # Safely initialize the audio manager after pygame.init()
+        print("[Startup] audio init")
         from audio_manager import audio_manager
         audio_manager.init_mixer()
 
+        print("[Startup] display set_mode")
         screen = pygame.display.set_mode((WIDTH, HEIGHT))
         pygame.display.set_caption("Endless Racer")
         clock = pygame.time.Clock()
 
+        print("[Startup] state manager")
         manager = StateManager()
+        print("[Startup] main loop")
 
         while True:
             events = pygame.event.get()

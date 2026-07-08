@@ -8,15 +8,20 @@ class AudioManager:
         self._voice_channel = None
         self._music_loaded  = False
         self._initialized   = False
+        self._disabled      = False
+
+    def _is_android(self):
+        return "ANDROID_PRIVATE" in os.environ
 
     def init_mixer(self):
         """Called once after pygame.init() to safely start the mixer."""
-        if not self._initialized:
+        if not self._initialized and not self._disabled:
             try:
                 pygame.mixer.init(frequency=22050)
                 self._initialized = True
             except Exception as e:
                 print(f"[Audio] Mixer init failed: {e}")
+                self._disabled = True
 
     def _music_path(self):
         # Prefer WAV (generated), fallback to mp3
@@ -28,7 +33,12 @@ class AudioManager:
 
     # ── Voice-over ────────────────────────────────────────────
     def play_welcome_voice(self):
+        # MP3 voice decoding can be fragile on some Android builds; keep startup safe.
+        if self._is_android():
+            return
         self.init_mixer()
+        if self._disabled:
+            return
         path = os.path.join(self.audio_dir, "welcome.mp3")
         if not os.path.exists(path):
             return
@@ -41,6 +51,8 @@ class AudioManager:
     # ── Music ─────────────────────────────────────────────────
     def _load_music(self):
         self.init_mixer()
+        if self._disabled:
+            return False
         path = self._music_path()
         if path is None:
             print("[Audio] No music file found in assets/audio/")
@@ -56,35 +68,56 @@ class AudioManager:
     def play_menu_music(self):
         """Soft background music for menus (respects saved volume)."""
         self.init_mixer()
-        if not self._music_loaded:
-            if not self._load_music():
+        try:
+            if self._disabled:
                 return
-        saved_vol = load_data().get("music_vol", 50) / 100 * 0.6  # menu = 60% of saved
-        pygame.mixer.music.set_volume(max(0.0, min(1.0, saved_vol)))
-        if not pygame.mixer.music.get_busy():
-            pygame.mixer.music.play(-1)
+            if not self._music_loaded:
+                if not self._load_music():
+                    return
+            saved_vol = load_data().get("music_vol", 50) / 100 * 0.6
+            pygame.mixer.music.set_volume(max(0.0, min(1.0, saved_vol)))
+            if not pygame.mixer.music.get_busy():
+                pygame.mixer.music.play(-1)
+        except Exception as e:
+            print(f"[Audio] menu music error: {e}")
+            self._disabled = True
 
     def play_game_music(self):
         """Full-volume racing music during gameplay (respects saved volume)."""
         self.init_mixer()
-        if not self._music_loaded:
-            if not self._load_music():
+        try:
+            if self._disabled:
                 return
-        saved_vol = load_data().get("music_vol", 50) / 100
-        pygame.mixer.music.set_volume(max(0.0, min(1.0, saved_vol)))
-        pygame.mixer.music.play(-1)
+            if not self._music_loaded:
+                if not self._load_music():
+                    return
+            saved_vol = load_data().get("music_vol", 50) / 100
+            pygame.mixer.music.set_volume(max(0.0, min(1.0, saved_vol)))
+            pygame.mixer.music.play(-1)
+        except Exception as e:
+            print(f"[Audio] game music error: {e}")
+            self._disabled = True
 
     def pause_music(self):
-        if self._initialized:
-            pygame.mixer.music.pause()
+        try:
+            if self._initialized and not self._disabled:
+                pygame.mixer.music.pause()
+        except Exception as e:
+            print(f"[Audio] pause error: {e}")
 
     def resume_music(self):
-        if self._initialized:
-            pygame.mixer.music.unpause()
+        try:
+            if self._initialized and not self._disabled:
+                pygame.mixer.music.unpause()
+        except Exception as e:
+            print(f"[Audio] resume error: {e}")
 
     def stop_music(self):
-        if self._initialized:
-            pygame.mixer.music.stop()
+        try:
+            if self._initialized and not self._disabled:
+                pygame.mixer.music.stop()
+        except Exception as e:
+            print(f"[Audio] stop error: {e}")
         self._music_loaded = False   # force reload next time
 
 audio_manager = AudioManager()
