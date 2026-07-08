@@ -194,11 +194,7 @@ class MainMenu(State):
             Button(WIDTH//2, 548, 240, 52, "CREDITS",   lambda: self.mgr.change_state("Credits")),
             Button(WIDTH//2, 610, 240, 52, "QUIT",      lambda: self.mgr.quit_game()),
         ]
-        # Voice only on very first launch
-        if first_launch:
-            audio_manager.play_welcome_voice()
-        # Soft menu music (restart only if not already playing)
-        audio_manager.play_menu_music()
+        audio_manager.stop_music()
 
     def handle_events(self, events):
         for e in events:
