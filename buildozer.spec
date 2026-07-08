@@ -16,7 +16,7 @@ source.dir = .
 source.include_exts = py,png,jpg,mp3,json,wav,ttf
 
 # (str) Application versioning
-version = 1.0.4
+version = 1.0.5
 
 # (list) Application requirements
 requirements = python3,pygame-ce

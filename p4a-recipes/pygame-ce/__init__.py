@@ -7,7 +7,7 @@ from pythonforandroid.toolchain import current_directory
 class PygameCeRecipe(CompiledComponentsPythonRecipe):
     """Build pygame-ce from source for the Android target architecture."""
 
-    version = "2.4.0"
+    version = "2.5.7"
     url = "https://github.com/pygame-community/pygame-ce/archive/{version}.tar.gz"
 
     name = "pygame-ce"
@@ -20,6 +20,7 @@ class PygameCeRecipe(CompiledComponentsPythonRecipe):
     def prebuild_arch(self, arch):
         super().prebuild_arch(arch)
         with current_directory(self.get_build_dir(arch.arch)):
+            self._patch_setup_py_for_python_314()
             setup_template = open(join("buildconfig", "Setup.Android.SDL2.in")).read()
             env = self.get_recipe_env(arch)
             env["ANDROID_ROOT"] = join(self.ctx.ndk.sysroot, "usr")
@@ -59,6 +60,18 @@ class PygameCeRecipe(CompiledComponentsPythonRecipe):
         env["PYGAME_CROSS_COMPILE"] = "TRUE"
         env["PYGAME_ANDROID"] = "TRUE"
         return env
+
+    def _patch_setup_py_for_python_314(self):
+        setup_py = "setup.py"
+        old_spawn = "distutils.ccompiler.spawn(cmd, dry_run=self.dry_run, **kwargs)"
+        new_spawn = (
+            "__import__('setuptools._distutils.spawn', "
+            "fromlist=['spawn']).spawn(cmd, dry_run=self.dry_run, **kwargs)"
+        )
+        source = open(setup_py, "r", encoding="utf-8").read()
+        if old_spawn in source:
+            source = source.replace(old_spawn, new_spawn)
+            open(setup_py, "w", encoding="utf-8").write(source)
 
 
 recipe = PygameCeRecipe()
